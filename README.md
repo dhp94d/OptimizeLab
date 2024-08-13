@@ -10,7 +10,16 @@
     - [2.1 자바스크립트 실행 시간 단축](#21-자바스크립트-실행-시간-단축)
       - [2.1.1 코드 최적화 및 초기 렌더링 시 필요없는 로직 지연시키기](#211-코드-최적화-및-초기-렌더링-시-필요없는-로직-지연시키기)
       - [2.1.2 망글링](#212-망글링)
-      - [2.1.3 결과](#213-결과)
+      - [2.1.3 개선 결과](#213-개선-결과)
+    - [2.2 차세대 형식을 사용해 이미지 제공하기](#22-차세대-형식을-사용해-이미지-제공하기)
+      - [2.2.1 이미지 변환 jgp -\> avif](#221-이미지-변환-jgp---avif)
+      - [2.2.2 개선 결과](#222-개선-결과)
+    - [2.3 이미지 크기 적절하게 설정하기 \& 이미지 요소에 width 및 height 명시하기](#23-이미지-크기-적절하게-설정하기--이미지-요소에-width-및-height-명시하기)
+      - [2.3.1 \<picture\> 적용](#231-picture-적용)
+      - [2.3.2 aspect-ratio 적용](#232-aspect-ratio-적용)
+      - [2.3.3 이미지 크기 최적화](#233-이미지-크기-최적화)
+      - [2.3.4 이미지 lazy-load 적용](#234-이미지-lazy-load-적용)
+      - [2.3.5 개선 결과](#235-개선-결과)
 
 ---
 
@@ -41,8 +50,8 @@
 
 현재 프로젝트에서 적용할 만한 개선방법은 아래와 같습니다.
 
-1.  코드 최적화 및 초기렌더링 시 필요없는 로직 지연시키기
-2.  망글링
+1. 코드 최적화 및 초기렌더링 시 필요없는 로직 지연시키기
+2. 망글링
 
 개선을 진행하겠습니다.
 
@@ -75,15 +84,17 @@ requestIdleCallback(heavyOperationAsync, { timeout: 3000 });
 &nbsp; 망글링이란 자바스크립트 코드에서 변수명, 함수명을 줄여 코드 전체 크기를 줄이는 기술입니다. 이를통해 전송 시간과 파싱 시간을 줄일 수 있습니다.
 **terser**을 통해 망글링을 진행하였으며 효과는 아래와 같습니다.
 
+```
 -rw-r--r-- 1 donghyunpark staff 365 Aug 11 17:37 main.js
 -rw-r--r-- 1 donghyunpark staff 275 Aug 13 02:08 main.min.js
 -rw-r--r-- 1 donghyunpark staff 2319 Aug 13 02:00 products.js
 -rw-r--r-- 1 donghyunpark staff 1223 Aug 13 02:08 products.min.js
+```
 
 main.js 코드 365 -> 275
 products.js 코드 2319 -> 1223
 
-#### 2.1.3 결과
+#### 2.1.3 개선 결과
 
 위 두 과정을 통해서 어떤 변화가 일어났는지 확인해보겠습니다.
 
@@ -96,3 +107,207 @@ products.js 코드 2319 -> 1223
 
 **자바스크립트 실행 시간 단축 후기**
 해당 프로젝트는 매우 간단한 프로젝트로 아주 간단한 기술들만 적용이 되었는데요, 만약 큰 프로젝트를 진행하시고 계시다면 트리쉐이킹, 망글링, 코드분할, 레이지로딩 등 다양한 기술들을 적용해보시면 됩니다!
+
+### 2.2 차세대 형식을 사용해 이미지 제공하기
+
+#### 2.2.1 이미지 변환 jgp -> avif
+
+<img width="779" alt="image" src="https://github.com/user-attachments/assets/d9ba9704-1079-4fb7-a5f9-3e826f9f7f43">
+
+현재 이미지가 jpg로 제공되고 있습니다. 이를 AVIF로 변환하면 JPG보다 이미지 압축 시 높은화질로 압축할 수 있으며, 파일 크기 또한 대폭 줄일 수 있어 웹 성능 최적화를 위해 자주 사용합니다.
+<br/>
+아래 사진은 avif 변환 사진입니다.
+<img width="799" alt="image" src="https://github.com/user-attachments/assets/f783f4c1-ea4f-4701-922b-e516f72d5428">
+<br/>
+
+#### 2.2.2 개선 결과
+
+이제 결과를 확인해봅니다!!
+<img width="799" alt="image" src="https://github.com/user-attachments/assets/ed39c924-17c8-41eb-87e6-c31f588a6ae2">
+
+개선 결과 1980kib -> 165kib
+&nbsp;확연한 용량 변화를 느낄 수 있었습니다. 하지만 api로 가져오는 이미지 파일들이 전부 jpg여서 아직 노란불이군요..
+최적의 방법은 아래와 같습니다.
+
+1. 이미지를 저장할떄 avif -> 현재 불가능
+2. db에 저장할때 avif로 변환하여 저장 -> 현재 불가능
+3. ssr환경으로 서버에서 avif로 변환하여 저장 -> 현재불가능
+4. 클라이언트에서 avif로 변환 -> 가능
+
+4번의 경우 가능하지만.. 추천하지 않음 오히려 제네레이터 과정에서 오히려 렌더링시간이 더 늘어날 수 있음.. 더불어 이미 브라우저가 jpg파일을 받은 상태로 이미지 렌더링시 일부 성능 향상을 얻을수는 있지만 효과가 크리티컬하지않아, 다른 이미지 최적화 용법을 통해 최적화 하는것용이하기 때문에 **차세대 형식을 사용해 이미지 제공하기** 최적화는 여기까지만 진행하겠습니다! 현업에서는 꼭 1,2,3을 활용해주세요!
+
+### 2.3 이미지 크기 적절하게 설정하기 & 이미지 요소에 width 및 height 명시하기
+
+#### 2.3.1 \<picture> 적용
+
+<img width="772" alt="image" src="https://github.com/user-attachments/assets/beb45dcb-5765-414b-ac70-a1bb7b154e16">
+
+<br/>
+<br/>
+Lighthouse는 렌더링된 이미지 크기가 실제 크기보다 4KiB 이상 작으면 경고를 띄웁니다. 이를 위해 렌더링 사이즈에 맞게 이미지 크기를 적절하게 설정해야합니다.
+<br/>
+<br/>
+&nbsp; 현재 이미지 구조는 다음과 같습니다.
+
+```
+    <img class="desktop" src="images/Hero_Desktop.avif" />
+    <img class="mobile" src="images/Hero_Mobile.avif" />
+    <img class="tablet" src="images/Hero_Tablet.avif" />
+```
+
+해당 코드의 문제점은 아래와 같습니다.
+
+1. 같은 이미지를 표현하기위해 서로 다른 \<img/> 태그를 사용중입니다. 이는 유지보수가 어렵고 코드가 비효율적이며 아래와 같은 방법으로 해결하면 좋습니다.
+   **\<picture>** 와 **\<source>** 사용
+
+```
+<picture>
+  <source width="576" height="576" media="(max-width: 575px)" srcset="images/Hero_Mobile.avif" type="image/avif" />
+  <source width="960" height="770" media="(min-width: 576px) and (max-width: 960px)" srcset="images/Hero_Tablet.avif" type="image/avif" />
+  <source width="1920" height="893" srcset="images/Hero_Desktop.avif" type="image/avif" />
+
+  <source width="576" height="576" media="(max-width: 575px)" srcset="images/Hero_Mobile.webp" type="image/webp" />
+  <source width="960" height="770" media="(min-width: 576px) and (max-width: 960px)" srcset="images/Hero_Tablet.webp" type="image/webp" />
+  <source width="1920" height="893" srcset="images/Hero_Desktop.webp" type="image/webp" />
+
+  <source width="576" height="576" media="(max-width: 575px)" srcset="images/Hero_Mobile.jpg" type="image/jpg" />
+  <source width="960" height="770" media="(min-width: 576px) and (max-width: 960px)" srcset="images/Hero_Tablet.jpg" type="image/jpg" />
+  <source width="1920" height="893" srcset="images/Hero_Desktop.jpg" type="image/jpg" />
+  <img width="1920" height="893" src="images/Hero_Desktop.jpg" />
+</picture>
+```
+
+source는 우선, media를 통해 source를 필터하고 그 후 type조건을 활용해 최종적으로 사용할 source를 img 태그에 렌더링 시킵니다. img태그의 기본값은 최종 예외일때 사용됩니다. 이를통해 이미지 요소에 맞게 적잘한 사이즈를 사용할 수 있습니다.
+<br/>
+<br/>
+
+#### 2.3.2 aspect-ratio 적용
+
+&nbsp;다음은 반응형으로 영역을 잡아 사용하는 img를 레이아웃 시프트가 되지 않도록 초기영역을 지정해주겠습니다. 현재 img영역은 아래와 같습니다
+
+```
+//code
+<div class="product-picture">
+    <img src="images/vr1.avif" alt="product: Penom Case" />
+</div>
+
+//css
+section.best-sellers .product-slider .product img {
+  max-width: 40%;
+}
+
+```
+
+해당 css는 영역이 잡혀있지않고 max-width만 설정되어있어 img가 로딩되기 전에는 영역값이 없어 레이아웃을 잡지 않습니다. 이로인해 이미지가 렌더링되면 레이아웃 시프트가되면서 이미지가 적재되고 이로인해 성능저하가 있습니다. 이를 개선하기 위해 aspect-ratio를 통하여 임시 영역을 잡아주겠습니다.
+
+> [aspect-ratio](https://developer.mozilla.org/en-US/docs/Web/CSS/aspect-ratio)는 요소의 종횡비를 지정하는 css 속성, 이미지 로딩 전에도 필요한 공간을 미리 확보할 수 있어 반응형에서 레이아웃 시프트 문제를 해결하는데 효과적임.
+
+```
+//before
+section.best-sellers .product-slider .product .product-picture {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+section.best-sellers .product-slider .product img {
+  max-width: 40%;
+}
+
+//after
+section.best-sellers .product-slider .product .product-picture {
+  aspect-ratio: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+section.best-sellers .product-slider .product img {
+  max-width: 40%;
+  max-height: 40%;
+  object-fit: contain;
+}
+
+```
+
+이제 변화를 확인해보겠습니다.
+
+**before**
+![image](https://github.com/user-attachments/assets/fa5abafb-611b-4dcd-ad06-7f299fcbdb2d)
+
+<br/>
+
+**after**
+![스크린샷 2024-08-14 오전 10 41 07](https://github.com/user-attachments/assets/a27b91e1-838d-4fd5-988c-3beba4479060)
+
+레이아웃 시프트가 확연히 개선되었습니다!!
+
+#### 2.3.3 이미지 크기 최적화
+
+현재 렌더링되는 화면에 비해 사이가 과도하게 큰 이미지들이 있습니다. 이를 최적화된 크기로 자르고 압축하여 사이즈를 최적화 해봅시다.
+
+<br/>
+
+![image](https://github.com/user-attachments/assets/18909f54-d008-41d2-9670-d0466eca0f51)
+
+avif로 변환을 하였으나, 여전히 큰 사이즈들이 있습니다. 이유는 해당 이미지 크기가 현재 렌더링되는 화면에 비해 과도하게 크며, 압축이 덜 되어있어 용량이 큰 편입니다. 이를 개선하기위해 아래 작업들을 진행하였습니다.
+
+1. 이미지 사이즈 조정(렌더링 및 fixed된 size에 맞게 크기 조정)
+2. 이미지 압축(그래픽이 크게 손상되지 않는 수준에서 최대한 압축)
+3. jpg -> avif, webp 변환
+
+#### 2.3.4 이미지 lazy-load 적용
+
+상품 목록 리스트를 api로 불러오고, 이를 렌더링시킬때 아직 뷰포트에 잡히지 않은 이미지까지 전부 다운로드받아 초기렌더링 및 네트워크 낭비를 일으키고 있습니다. 이를 개선하기위해 이미지에 레이지로딩을 적용해보겠습니다.
+
+해당 로직은 아래와 같습니다.
+
+1. img태그의 src를 임시 어트리뷰트 dataset.src에 넣어줍니다
+
+```
+img.dataset.src = product.image;
+```
+
+2. intersectionobserver를 통하여 해당 Img를 감시합니다.
+3. Img가 설정한 뷰포트의 지점에 도달하면 Img의 dataset.src 속성을 src에 넣어줍니다.
+4. 더 이상 감지할 필요가 없으니 unobserve를 통해 감지를 취소해줍시다.
+
+위 과정을 통하여 레이지로딩을 구현할 수 있습니다. 로직은 아래와 같습니다.
+
+```
+const onIntersection = (entries, observer) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const img = entry.target;
+      img.src = img.dataset.src;
+      observer.unobserve(img);
+    }
+  });
+};
+
+const observer = new IntersectionObserver(onIntersection, {
+  root: null, // 뷰포트
+  threshold: 0.1, // 10%가 보이면 콜백 실행
+});
+
+...
+//이미지 dataset.src 추가 및 감지부분
+const img = document.createElement('img');
+img.dataset.src = product.image;
+observer.observe(img);
+```
+
+해당 코드를 통해 이전과 다르게 사이트에 접속 시 뷰포트에 있는 이미지만 로드하는것을 보실 수 있습니다.
+![image](https://github.com/user-attachments/assets/3d70ee4f-1ca0-4762-9f8a-fac2b479941f)
+
+#### 2.3.5 개선 결과
+
+자 이제 얼마나 개선되었는지 지표를 확인해볼까요?
+![image](https://github.com/user-attachments/assets/f4ca7ca8-6134-437b-b756-ee68e8f715c1)
+![image](https://github.com/user-attachments/assets/6e6ad395-702d-4b66-a84d-6ed30230b02a)
+![image](https://github.com/user-attachments/assets/0be71f54-e2fa-44ae-bfc7-14397ac5d495)
+
+이미지 관련된 지표가 모두 정상화 되었습니다!! 짝짝짝짝
