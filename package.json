@@ -1,0 +1,10 @@
+{
+  "name": "OptimizeLab",
+  "version": "1.0.0",
+  "scripts": {
+    "mangle-js": "terser js/products.js -o js/products.min.js --mangle && terser js/main.js -o js/main.min.js --mangle"
+  },
+  "devDependencies": {
+    "terser": "^5.10.0"
+  }
+}
