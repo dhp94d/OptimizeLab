@@ -4,12 +4,27 @@ async function loadProducts() {
   displayProducts(products);
 }
 
+const onIntersection = (entries, observer) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const img = entry.target;
+      img.src = img.dataset.src;
+      observer.unobserve(img); // 더 이상 감시하지 않음
+    }
+  });
+};
+
+const observer = new IntersectionObserver(onIntersection, {
+  root: null, // 뷰포트
+  threshold: 0.1, // 10%가 보이면 콜백 실행
+});
+
 function displayProducts(products) {
   // Find the container where products will be displayed
   const container = document.querySelector('#all-products .container');
 
   // Iterate over each product and create the HTML structure safely
-  products.forEach((product) => {
+  products.forEach(product => {
     // Create the main product div
     const productElement = document.createElement('div');
     productElement.classList.add('product');
@@ -18,10 +33,13 @@ function displayProducts(products) {
     const pictureDiv = document.createElement('div');
     pictureDiv.classList.add('product-picture');
     const img = document.createElement('img');
-    img.src = product.image;
+    img.dataset.src = product.image;
     img.alt = `product: ${product.title}`;
-    img.width = 250;
+    img.width = 350;
+    img.height = 350;
     pictureDiv.appendChild(img);
+
+    observer.observe(img);
 
     // Create the product info div
     const infoDiv = document.createElement('div');
