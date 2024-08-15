@@ -19,7 +19,8 @@
       - [2.3.2 aspect-ratio 적용](#232-aspect-ratio-적용)
       - [2.3.3 이미지 크기 최적화](#233-이미지-크기-최적화)
       - [2.3.4 이미지 lazy-load 적용](#234-이미지-lazy-load-적용)
-      - [2.3.5 개선 결과](#235-개선-결과)
+      - [2.3.5 개선 결과](#235-개선-결과)
+    - [2.4 렌더링 차단 리소스 제거하기](#24-렌더링-차단-리소스-제거하기)
 
 ---
 
@@ -94,6 +95,8 @@ requestIdleCallback(heavyOperationAsync, { timeout: 3000 });
 main.js 코드 365 -> 275
 products.js 코드 2319 -> 1223
 
+---
+
 #### 2.1.3 개선 결과
 
 위 두 과정을 통해서 어떤 변화가 일어났는지 확인해보겠습니다.
@@ -108,6 +111,8 @@ products.js 코드 2319 -> 1223
 **자바스크립트 실행 시간 단축 후기**
 해당 프로젝트는 매우 간단한 프로젝트로 아주 간단한 기술들만 적용이 되었는데요, 만약 큰 프로젝트를 진행하시고 계시다면 트리쉐이킹, 망글링, 코드분할, 레이지로딩 등 다양한 기술들을 적용해보시면 됩니다!
 
+---
+
 ### 2.2 차세대 형식을 사용해 이미지 제공하기
 
 #### 2.2.1 이미지 변환 jgp -> avif
@@ -119,6 +124,8 @@ products.js 코드 2319 -> 1223
 아래 사진은 avif 변환 사진입니다.
 <img width="799" alt="image" src="https://github.com/user-attachments/assets/f783f4c1-ea4f-4701-922b-e516f72d5428">
 <br/>
+
+---
 
 #### 2.2.2 개선 결과
 
@@ -134,7 +141,9 @@ products.js 코드 2319 -> 1223
 3. ssr환경으로 서버에서 avif로 변환하여 저장 -> 현재불가능
 4. 클라이언트에서 avif로 변환 -> 가능
 
-4번의 경우 가능하지만.. 추천하지 않음 오히려 제네레이터 과정에서 오히려 렌더링시간이 더 늘어날 수 있음.. 더불어 이미 브라우저가 jpg파일을 받은 상태로 이미지 렌더링시 일부 성능 향상을 얻을수는 있지만 효과가 크리티컬하지않아, 다른 이미지 최적화 용법을 통해 최적화 하는것용이하기 때문에 **차세대 형식을 사용해 이미지 제공하기** 최적화는 여기까지만 진행하겠습니다! 현업에서는 꼭 1,2,3을 활용해주세요!
+&nbsp;4번의 경우 가능하지만.. 추천하지 않음 오히려 제네레이터 과정에서 오히려 렌더링시간이 더 늘어날 수 있음.. 더불어 이미 브라우저가 jpg파일을 받은 상태로 이미지 렌더링시 일부 성능 향상을 얻을수는 있지만 효과가 크리티컬하지않아, 다른 이미지 최적화 용법을 통해 최적화 하는것용이하기 때문에 **차세대 형식을 사용해 이미지 제공하기** 최적화는 여기까지만 진행하겠습니다! 현업에서는 꼭 1,2,3을 활용해주세요!
+
+---
 
 ### 2.3 이미지 크기 적절하게 설정하기 & 이미지 요소에 width 및 height 명시하기
 
@@ -180,6 +189,8 @@ Lighthouse는 렌더링된 이미지 크기가 실제 크기보다 4KiB 이상 �
 source는 우선, media를 통해 source를 필터하고 그 후 type조건을 활용해 최종적으로 사용할 source를 img 태그에 렌더링 시킵니다. img태그의 기본값은 최종 예외일때 사용됩니다. 이를통해 이미지 요소에 맞게 적잘한 사이즈를 사용할 수 있습니다.
 <br/>
 <br/>
+
+---
 
 #### 2.3.2 aspect-ratio 적용
 
@@ -245,6 +256,8 @@ section.best-sellers .product-slider .product img {
 
 레이아웃 시프트가 확연히 개선되었습니다!!
 
+---
+
 #### 2.3.3 이미지 크기 최적화
 
 현재 렌더링되는 화면에 비해 사이가 과도하게 큰 이미지들이 있습니다. 이를 최적화된 크기로 자르고 압축하여 사이즈를 최적화 해봅시다.
@@ -257,7 +270,7 @@ avif로 변환을 하였으나, 여전히 큰 사이즈들이 있습니다. 이�
 
 1. 이미지 사이즈 조정(렌더링 및 fixed된 size에 맞게 크기 조정)
 2. 이미지 압축(그래픽이 크게 손상되지 않는 수준에서 최대한 압축)
-3. jpg -> avif, webp 변환
+3. ## jpg -> avif, webp 변환
 
 #### 2.3.4 이미지 lazy-load 적용
 
@@ -303,7 +316,9 @@ observer.observe(img);
 해당 코드를 통해 이전과 다르게 사이트에 접속 시 뷰포트에 있는 이미지만 로드하는것을 보실 수 있습니다.
 ![image](https://github.com/user-attachments/assets/3d70ee4f-1ca0-4762-9f8a-fac2b479941f)
 
-#### 2.3.5 개선 결과
+---
+
+#### 2.3.5 개선 결과
 
 자 이제 얼마나 개선되었는지 지표를 확인해볼까요?
 ![image](https://github.com/user-attachments/assets/f4ca7ca8-6134-437b-b756-ee68e8f715c1)
@@ -311,3 +326,28 @@ observer.observe(img);
 ![image](https://github.com/user-attachments/assets/0be71f54-e2fa-44ae-bfc7-14397ac5d495)
 
 이미지 관련된 지표가 모두 정상화 되었습니다!! 짝짝짝짝
+
+---
+
+### 2.4 렌더링 차단 리소스 제거하기
+
+<img width="776" alt="image" src="https://github.com/user-attachments/assets/3e928ab4-40a0-4206-8755-80f4e3aabe0c">
+cookie-consent.js가 LCP와 FCP를 방해하고 있다고 설명되어 있는데요, cookie-consent.js를 어떻게 호출하고있나 확인해보겠습니다.
+
+<br/>
+<br/>
+
+```
+<head>
+  <!-- Cookie Consent by FreePrivacyPolicy.com https://www.FreePrivacyPolicy.com -->
+  <script
+    type="text/javascript"
+    src="//www.freeprivacypolicy.com/public/cookie-consent/4.1.0/cookie-consent.js"
+    charset="UTF-8"
+  ></script>
+</head>
+```
+
+&nbsp;해당 이슈를 해결하기 위해서는 \<head> 태그에 대한 이해가 있어야 합니다.
+
+&nbsp;현재 구조에서의 문제점은
