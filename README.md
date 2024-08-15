@@ -21,6 +21,9 @@
       - [2.3.4 이미지 lazy-load 적용](#234-이미지-lazy-load-적용)
       - [2.3.5 개선 결과](#235-개선-결과)
     - [2.4 렌더링 차단 리소스 제거하기](#24-렌더링-차단-리소스-제거하기)
+      - [2.4.1 defer 사용하기](#241-defer-사용하기)
+      - [2.4.2 개선 결과](#242-개선-결과)
+    - [2.5 기본 스레드 작업 최소화 하기](#25-기본-스레드-작업-최소화-하기)
 
 ---
 
@@ -345,9 +348,60 @@ cookie-consent.js가 LCP와 FCP를 방해하고 있다고 설명되어 있는데
     src="//www.freeprivacypolicy.com/public/cookie-consent/4.1.0/cookie-consent.js"
     charset="UTF-8"
   ></script>
+  <script type="text/javascript" charset="UTF-8">
+    cookieconsent.run({
+      notice_banner_type: 'simple',
+      consent_type: 'express',
+      palette: 'light',
+      language: 'en',
+      page_load_consent_levels: ['strictly-necessary'],
+      notice_banner_reject_button_hide: false,
+      preferences_center_close_button_hide: false,
+      page_refresh_confirmation_buttons: false,
+      website_name: 'Performance Course',
+    });
+  </script>
 </head>
 ```
 
-&nbsp;해당 이슈를 해결하기 위해서는 \<head> 태그에 대한 이해가 있어야 합니다.
+#### 2.4.1 defer 사용하기
 
-&nbsp;현재 구조에서의 문제점은
+해당 이슈를 해결하기 위해서는 \<head> 태그에 대한 이해가 있어야 합니다.
+
+&nbsp;현재 구조에서의 문제점은 \<head>태그 안에 동기적으로 스크립트를 로딩하고있는 점입니다. 이런식으로 스크립트를 헤더안에 넣으면 해당 스크립트를 완전히 다운로드하고 실행할 떄까지 다른 HTML요소의 로드를 중단합니다. 이로인해 페이지 렌더링이 느려지며, SEO또한 부정적인 영향을 줄 수 있습니다.(크롤러가 인덱싱하기 힘듬)
+
+위 이슈를 해결하기 위해 비동기로 script를 동적 로딩하거나, body의 끝으로 이동하면 됩니다. 저는 body끝으로 이동시켜 defer를 적용하겠습니다.
+
+```
+<body>
+  <script
+        type="text/javascript"
+        src="//www.freeprivacypolicy.com/public/cookie-consent/4.1.0/cookie-consent.js"
+        charset="UTF-8"
+        defer
+  ></script>
+  <script type="text/javascript" charset="UTF-8" defer>
+    cookieconsent.run({
+      notice_banner_type: 'simple',
+      consent_type: 'express',
+      palette: 'light',
+      language: 'en',
+      page_load_consent_levels: ['strictly-necessary'],
+      notice_banner_reject_button_hide: false,
+      preferences_center_close_button_hide: false,
+      page_refresh_confirmation_buttons: false,
+      website_name: 'Performance Course',
+    });
+  </script>
+</body>
+```
+
+---
+
+#### 2.4.2 개선 결과
+
+<img width="776" alt="image" src="https://github.com/user-attachments/assets/66fb09e4-13e6-4235-9376-e027d5b28081">
+
+통과되었습니다!!
+
+### 2.5 기본 스레드 작업 최소화 하기
