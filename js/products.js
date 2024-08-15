@@ -2,6 +2,13 @@ async function loadProducts() {
   const response = await fetch('https://fakestoreapi.com/products');
   const products = await response.json();
   displayProducts(products);
+  // Simulate heavy operation. It could be a complex price calculation.
+  const heavyOperationAsync = () => {
+    for (let i = 0; i < 10000000; i++) {
+      const temp = Math.sqrt(i) * Math.sqrt(i);
+    }
+    heavyOperationAsync();
+  };
 }
 
 const onIntersection = (entries, observer) => {
@@ -16,8 +23,24 @@ const onIntersection = (entries, observer) => {
 
 const observer = new IntersectionObserver(onIntersection, {
   root: null, // 뷰포트
-  threshold: 0.1, // 10%가 보이면 콜백 실행
+  threshold: 0.25, // 25%가 보이면 콜백 실행
 });
+
+const productsObserver = new IntersectionObserver(
+  (entries, observer) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        // #all-products .container가 뷰포트에 들어왔을 때만 실행
+        loadProducts();
+        observer.unobserve(entry.target); // 한 번만 실행되도록 관찰 중지
+      }
+    });
+  },
+  {
+    root: null, // 뷰포트 사용
+    threshold: 0.1, // 10%가 보일 때 실행
+  }
+);
 
 function displayProducts(products) {
   // Find the container where products will be displayed
@@ -76,14 +99,3 @@ function displayProducts(products) {
     container.appendChild(productElement);
   });
 }
-
-loadProducts();
-
-// Simulate heavy operation. It could be a complex price calculation.
-const heavyOperationAsync = () => {
-  for (let i = 0; i < 10000000; i++) {
-    const temp = Math.sqrt(i) * Math.sqrt(i);
-  }
-};
-
-requestIdleCallback(heavyOperationAsync);
