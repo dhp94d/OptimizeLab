@@ -5,7 +5,7 @@ async function loadProducts() {
 }
 
 const onIntersection = (entries, observer) => {
-  entries.forEach(entry => {
+  entries.forEach((entry) => {
     if (entry.isIntersecting) {
       const img = entry.target;
       img.src = img.dataset.src;
@@ -24,7 +24,7 @@ function displayProducts(products) {
   const container = document.querySelector('#all-products .container');
 
   // Iterate over each product and create the HTML structure safely
-  products.forEach(product => {
+  products.forEach((product) => {
     // Create the main product div
     const productElement = document.createElement('div');
     productElement.classList.add('product');
@@ -45,15 +45,15 @@ function displayProducts(products) {
     const infoDiv = document.createElement('div');
     infoDiv.classList.add('product-info');
 
-    const category = document.createElement('h5');
+    const category = document.createElement('p');
     category.classList.add('categories');
     category.textContent = product.category;
 
-    const title = document.createElement('h4');
+    const title = document.createElement('p');
     title.classList.add('title');
     title.textContent = product.title;
 
-    const price = document.createElement('h3');
+    const price = document.createElement('p');
     price.classList.add('price');
     const priceSpan = document.createElement('span');
     priceSpan.textContent = `US$ ${product.price}`;
