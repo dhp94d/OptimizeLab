@@ -45,7 +45,7 @@ header .logo a {
 }
 
 header .logo .blue-dot {
-  background-color: #33c6dd;
+  background-color: #0c5d69;
   width: 10px;
   height: 10px;
   display: inline-block;
@@ -76,7 +76,7 @@ header nav ul li a {
 }
 
 header nav ul li a:hover {
-  color: #33c6dd;
+  color: #0c5d69;
 }
 
 header nav ul li:last-of-type a {
@@ -139,7 +139,7 @@ section.hero img {
   width: 220px;
   max-width: 100%;
   border-radius: 92px;
-  background-color: #33c6dd;
+  background-color: #0c5d69;
   color: #fff;
   font-size: 16px;
   font-weight: 700;
@@ -152,9 +152,9 @@ section.hero img {
 }
 
 .hero-content button:hover {
-  color: #33c6dd;
+  color: #0c5d69;
   background-color: #fff;
-  border: 1px solid #33c6dd;
+  border: 1px solid #0c5d69;
 }
 
 section.country-bar {
@@ -184,7 +184,7 @@ section.best-sellers h1 {
 
 section.best-sellers hr {
   border: none;
-  border-top: 5px solid #33c6dd;
+  border-top: 5px solid #0c5d69;
   width: 66px;
 }
 
@@ -252,7 +252,7 @@ section.best-sellers .product-slider .product .product-info {
 }
 
 section.best-sellers .product-slider .product .product-info .categories {
-  color: #33c6dd;
+  color: #0c5d69;
   font-weight: normal;
   font-size: 14px;
   letter-spacing: 0.35px;
@@ -295,7 +295,7 @@ section.best-sellers
   .product-info
   .price
   .original-price {
-  color: #9b9b9b;
+  color: black;
   font-weight: normal;
   font-size: 16px;
   letter-spacing: 0.4px;
@@ -318,8 +318,8 @@ section.best-sellers .product-slider .product .product-info button {
 }
 
 section.best-sellers .product-slider .product:hover .product-info button {
-  background-color: #33c6dd;
-  border: 1px solid #33c6dd;
+  background-color: #0c5d69;
+  border: 1px solid #0c5d69;
   color: white;
 }
 
@@ -419,7 +419,7 @@ footer .bottom-nav ul li a {
 }
 
 footer .bottom-nav ul li a:hover {
-  color: #33c6dd;
+  color: #0c5d69;
 }
 
 footer .bottom-nav ul li.list-title {
@@ -642,7 +642,7 @@ footer .copyright-text {
   }
 
   section.best-sellers hr {
-    border-top: 4px solid #33c6dd;
+    border-top: 4px solid #0c5d69;
     width: 40px;
   }
 
